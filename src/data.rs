@@ -36,8 +36,9 @@ impl DataStreamer {
     pub fn next(&self) -> Result<Option<serde_json::Value>> {
         let res = match self.rx.try_recv() {
             Ok(event) => {
-                let event = event.map_err(|e| anyhow!(e.to_string()))?;
-                let json = serde_json::from_str::<serde_json::Value>(&event.data)?;
+                let event = event.map_err(|e| anyhow!(e.to_string()))?.data;
+
+                let json = serde_json::from_str::<serde_json::Value>(&event)?;
                 Ok(Some(json))
             }
             Err(e) => match e {
