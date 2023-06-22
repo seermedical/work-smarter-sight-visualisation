@@ -1,2 +1,4 @@
 /target
 .env
+# Don't commit the secrets!!
+/.cargo/config.toml 
