@@ -16,7 +16,7 @@ use nannou::{
 mod data;
 
 const WINDOW_SIZE: u32 = 900;
-const NUM_EVENTS: usize = 20;
+const NUM_EVENTS: usize = 30;
 const NOISE_SCALE: f64 = 500.0;
 
 // 16 Colour Macintosh II Pallette
@@ -133,17 +133,18 @@ fn view(app: &App, model: &Model, frame: Frame) {
     //     .color(rgb_u32(PINK));
     // }
 
-    let fps = app.fps();
 
+    for (_, device) in &model.device_list {
+        device.draw(app, &draw, model.font.clone());
+    }
+
+    let fps = app.fps();
     draw.xy(app.window_rect().bottom_left() + vec2(50.0, 50.0))
         .text(&fps.to_string())
         .font(model.font.clone())
         .font_size(12)
         .color(rgb_u32(PINK));
 
-    for (_, device) in &model.device_list {
-        device.draw(app, &draw, model.font.clone());
-    }
     draw.finish_remaining_drawings();
     draw.to_frame(app, &frame).unwrap();
 }
@@ -159,14 +160,14 @@ struct Event {
 impl Event {
     fn new(app: &App, json: serde_json::Value) -> Self {
         let json_string = json.to_string();
-        let slice_min = if json_string.len() <= 9 { 0 } else { 9 };
-        let slice_max = if json_string.len() >= 200 {
-            200
-        } else {
-            json_string.len() - 1
-        };
-        let slice_size = thread_rng().gen_range(100..slice_max);
-        let json_string = json_string[slice_min..slice_size].to_string();
+        // let slice_min = if json_string.len() <= 9 { 0 } else { 9 };
+        // let slice_max = if json_string.len() >= 200 {
+        //     200
+        // } else {
+        //     json_string.len() - 1
+        // };
+        // let slice_size = thread_rng().gen_range(100..slice_max);
+        // let json_string = json_string[slice_min..slice_size].to_string();
 
         let x_vel = thread_rng().gen_range(30..100) as f32 / 100.0;
         let mut velocity = vec2(x_vel, 0.0) * 20.0;
@@ -214,7 +215,7 @@ impl Event {
             .text(&self.json_string)
             .width(app.window_rect().w() + 600.0)
             .wrap_by_character()
-            .left_justify()
+            // .left_justify()
             .font(font.clone())
             .font_size(font_size as u32)
             .color(*colour);
